@@ -374,7 +374,7 @@ address {
 .profile-banner-stripe {
   position: relative;
   height: 200px;
-  background-image: url("images/header bg.jpg");
+  background-image: url("Images/header bg.jpg");
   background-size: cover;
   background-position: 72% 28%;
 }
