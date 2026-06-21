@@ -3,6 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    window.SITE_BASE = (function () {
+      if (location.pathname === '/myweb' || location.pathname.startsWith('/myweb/')) {
+        return '/myweb/';
+      }
+      return '';
+    })();
+
+    if (window.SITE_BASE) {
+      var siteBase = document.createElement('base');
+      siteBase.href = window.SITE_BASE;
+      document.head.appendChild(siteBase);
+    }
+  </script>
   <title>XIANG Hanyi — About</title>
   <meta name="description" content="About XIANG Hanyi — literary scholar and writer.">
   <link rel="preconnect" href="https://fonts.googleapis.com">

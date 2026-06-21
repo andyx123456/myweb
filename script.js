@@ -10,6 +10,15 @@ function resetScrollPosition() {
 
 resetScrollPosition();
 
+function resolveSitePath(path) {
+  if (!path || /^([a-z]+:|\/\/)/i.test(path) || path.startsWith('/')) {
+    return path;
+  }
+
+  const base = window.SITE_BASE || '';
+  return `${base}${path}`;
+}
+
 function setupToggle(buttonId, contentSelector, expandedLabel, collapsedLabel) {
   const button = document.getElementById(buttonId);
   if (!button) return;
@@ -337,15 +346,19 @@ function setupPdfViewer() {
   }
 
   function getPdfViewerErrorMessage() {
+    const hostedExample = window.SITE_BASE
+      ? `${window.location.origin}${window.SITE_BASE}works.html`
+      : `${window.location.origin}${window.location.pathname.replace(/[^/]+$/, '')}works.html`;
+
     if (typeof pdfjsLib === 'undefined') {
       return 'The PDF viewer library did not load. Connect to the internet and refresh the page, then try again.';
     }
 
     if (window.location.protocol === 'file:') {
-      return 'This viewer cannot open documents when the page is opened directly from a file on your computer. In Cursor, use Live Server (or another local server) and open works.html at an address like http://localhost:5500/works.html.';
+      return `This viewer cannot open documents when the page is opened directly from a file on your computer. Use Live Server (or another local server) and open works.html at an address like http://localhost:5500/myweb/works.html or ${hostedExample}.`;
     }
 
-    return 'Unable to load this document. Check that the PDF file exists in the documents folder and try again.';
+    return `Unable to load this document. Check that the PDF file exists in the Documents folder and try again at ${hostedExample}.`;
   }
 
   function showViewerError(message) {
@@ -511,7 +524,8 @@ function setupPdfViewer() {
   }
 
   function getPdfSrc(trigger) {
-    return trigger.dataset.pdfSrc || trigger.getAttribute('href');
+    const src = trigger.dataset.pdfSrc || trigger.getAttribute('href');
+    return resolveSitePath(src);
   }
 
   function getPdfTitle(trigger) {
