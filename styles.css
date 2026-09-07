@@ -977,6 +977,10 @@ html.has-entry-animation .profile-banner-stripe .profile-photo.entry-from-bottom
   margin: 0 0 12px;
 }
 
+.work-excerpt:has(+ .work-meta) {
+  margin-bottom: 4px;
+}
+
 .work-quote {
   margin: 0 0 12px;
   padding: 12px 16px;
@@ -1374,6 +1378,14 @@ body.page-home > main {
 
 .page-home .interest-tags .tag-tone-6 {
   background: rgba(128, 82, 118, 0.16);
+}
+
+.page-home .interest-tags .tag-tone-7 {
+  background: rgba(42, 138, 148, 0.2);
+}
+
+.page-home .interest-tags .tag-tone-8 {
+  background: rgba(196, 92, 52, 0.18);
 }
 
 .page-home .site-footer {
