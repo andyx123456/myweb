@@ -178,12 +178,18 @@ function setupWorksSidebar() {
   if (!sidebar) return;
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const horizontalNav = window.matchMedia('(max-width: 1023px)');
+  const track = sidebar.querySelector('.works-sidebar-track');
+  const indicator = sidebar.querySelector('.works-sidebar-indicator');
   const links = [...sidebar.querySelectorAll('a[data-section]')];
   const sections = links
     .map((link) => document.getElementById(link.dataset.section))
     .filter(Boolean);
 
   if (!sections.length) return;
+
+  let currentSectionId = null;
+  let indicatorReady = false;
 
   function clearUrlHash() {
     if (!window.location.hash) return;
@@ -194,16 +200,55 @@ function setupWorksSidebar() {
 
   clearUrlHash();
 
-  function setActiveSection(sectionId) {
+  function positionIndicator(link, instant) {
+    if (!track || !indicator || !link) return;
+
+    const trackRect = track.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    const skipMotion = instant || prefersReducedMotion || !indicatorReady;
+
+    if (skipMotion) {
+      indicator.style.transition = 'none';
+    }
+
+    if (horizontalNav.matches) {
+      const x = linkRect.left - trackRect.left + linkRect.width / 2;
+      indicator.style.transform = `translateX(${x}px) translateX(-50%)`;
+    } else {
+      const y = linkRect.top - trackRect.top + linkRect.height / 2;
+      indicator.style.transform = `translateY(${y}px) translateY(-50%)`;
+    }
+
+    if (skipMotion) {
+      indicator.offsetHeight;
+      indicator.style.transition = '';
+    }
+
+    if (!indicatorReady) {
+      indicator.classList.add('is-ready');
+      indicatorReady = true;
+    }
+  }
+
+  function setActiveSection(sectionId, instant) {
+    const sectionChanged = sectionId !== currentSectionId;
+    currentSectionId = sectionId;
+
+    let activeLink = links[0];
     links.forEach((link) => {
       const isActive = link.dataset.section === sectionId;
       link.classList.toggle('is-active', isActive);
       if (isActive) {
+        activeLink = link;
         link.setAttribute('aria-current', 'true');
       } else {
         link.removeAttribute('aria-current');
       }
     });
+
+    if (sectionChanged || instant) {
+      positionIndicator(activeLink, instant || !sectionChanged);
+    }
   }
 
   function updateActiveSection() {
@@ -251,6 +296,16 @@ function setupWorksSidebar() {
 
       setActiveSection(link.dataset.section);
     });
+  });
+
+  window.addEventListener('resize', () => {
+    const active = links.find((link) => link.dataset.section === currentSectionId);
+    if (active) positionIndicator(active, true);
+  });
+
+  horizontalNav.addEventListener('change', () => {
+    const active = links.find((link) => link.dataset.section === currentSectionId);
+    if (active) positionIndicator(active, true);
   });
 
   updateActiveSection();
